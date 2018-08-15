@@ -9,7 +9,6 @@ See LICENSE file for full license text.
 import fcntl
 import sys
 import os
-import time
 import hashlib
 import logging
 import argparse
@@ -114,8 +113,7 @@ if __name__ == '__main__':
     for f in entropy_files:
         i += sha512(digest_sha512, f)
     if not i:
-        logging.debug("seeding with seconds since Epoch as last resort (very bad)")
-        digest_sha512.update(time.time())
+        sys.exit(1)
 
     try:
         with open("/dev/urandom", 'wb') as fp:

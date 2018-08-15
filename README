@@ -27,8 +27,7 @@ on some kernel pseudo random data like kernel ring buffer contents from
 of various procfs files (e.g. interrupts, buddyinfo, loadavg).
 
 All these sources should not be considered as good random seed, but much
-better than just using number of seconds since Epoch that is used as
-fallback strategy when none of above sources available.
+better than just using number of seconds since Epoch.
 
 Use SHA512 algo to avoid using contents directly. Thus we get up to 512
 bits (128 bytes) of early entropy that should be enough to complete some
