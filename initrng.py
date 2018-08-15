@@ -132,6 +132,7 @@ def init():
         "/dev/kmsg",
         "/proc/buddyinfo",
         "/proc/interrupts",
+        "/proc/softirqs",
         "/proc/loadavg",
     ]
     parser.add_argument('-e', '--entropy-file', default = [],

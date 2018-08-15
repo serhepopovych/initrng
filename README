@@ -55,7 +55,9 @@ Examples:
     #  /dev/kmsg
     #  /proc/interrupts
     #  /proc/buddyinfo
+    #  /proc/softirqs
     #  /proc/loadavg
+    #
     $ sudo initrng.py
 
     # use 'debug' severity for logging and custom entropy file
