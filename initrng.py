@@ -83,11 +83,14 @@ def add_entropy(digest, fileName = "/dev/urandom"):
     size = digest.digest_size
     digest = digest.digest()
 
-    # struct rand_pool_info {
-    #         int    entropy_count;
-    #         int    buf_size;
-    #         __u32  buf[0];
-    # };
+    # from random(4):
+    #
+    #   struct rand_pool_info {
+    #           int    entropy_count;
+    #           int    buf_size;
+    #           __u32  buf[0];
+    #   };
+    #
     fmt = "ii{:d}s".format(size)
     rand_pool_info = struct.pack(fmt, size * 8, size, digest)
 
