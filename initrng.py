@@ -40,9 +40,8 @@ def sha512sum(digest, fileName, blockSize = 16 * 1024):
     except IOError:
         return False
 
-    fd = fp.fileno()
-    flags = fcntl.fcntl(fd, fcntl.F_GETFL) | os.O_NONBLOCK
-    if fcntl.fcntl(fd, fcntl.F_SETFL, flags):
+    flags = fcntl.fcntl(fp, fcntl.F_GETFL) | os.O_NONBLOCK
+    if fcntl.fcntl(fp, fcntl.F_SETFL, flags):
         fp.close()
         return False
 
