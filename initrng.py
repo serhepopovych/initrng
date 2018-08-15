@@ -152,13 +152,22 @@ def init():
     logging.basicConfig(format = "{:s}: %(message)s".format(prog_name),
                         level = getattr(logging, loglevels[args.loglevel]))
 
+    # adjust entropy_files
     if not args.entropy_files:
         args.entropy_files = dflt_entropy_files
+        logging.debug("using default list of files as entropy source")
 
-    if args.repeat <= 0:
-        args.repeat = 1
-    elif args.repeat > 128:
-        args.repeat = 128
+    # adjust repeat
+    repeat = args.repeat
+
+    if repeat <= 0:
+        repeat = 1
+    elif repeat > 128:
+        repeat = 128
+
+    if repeat != args.repeat:
+        logging.debug("adjust repeat count from %d to %d", args.repeat, repeat)
+        args.repeat = repeat
 
     return args
 
