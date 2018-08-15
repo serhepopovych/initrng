@@ -139,28 +139,45 @@ def init():
                         action = 'append', dest = 'entropy_files', type = str,
                         help = 'files to use as source of entropy (multiple)')
 
+    # repeat
+    parser.add_argument('-r', '--repeat', default = 8,
+                        action = 'store', type = int,
+                        help = 'repeat entropy updates # times (default 8)')
+
     args = parser.parse_args()
 
     logging.basicConfig(format = "{:s}: %(message)s".format(prog_name),
                         level = getattr(logging, loglevels[args.loglevel]))
 
-    return args.entropy_files or dflt_entropy_files
+    if not args.entropy_files:
+        args.entropy_files = dflt_entropy_files
+
+    if args.repeat <= 0:
+        args.repeat = 1
+    elif args.repeat > 128:
+        args.repeat = 128
+
+    return args
 
 if __name__ == '__main__':
-    entropy_files = init()
+    args = init()
 
     logging.info("Linux Random Number Generator (RNG) early init")
 
-    digest_sha512 = hashlib.sha512()
+    entropy_files = args.entropy_files
+    repeat = args.repeat
 
-    i = 0
-    for f in entropy_files:
-        i += sha512(digest_sha512, f)
-    if not i:
-        sys.exit(1)
+    for x in range(1, repeat + 1):
+        digest_sha512 = hashlib.sha512()
 
-    method, err = add_entropy(digest_sha512)
-    if err:
-        logging.error("error seeding Linux RNG: %s", err)
-    else:
-        logging.info("successfuly seeded Linux RNG using '%s' method", method)
+        i = 0
+        for f in entropy_files:
+            i += sha512(digest_sha512, f)
+        if not i:
+            continue
+
+        method, err = add_entropy(digest_sha512)
+        if err:
+            logging.debug("error seeding Linux RNG, step %d: %s", x, err)
+        else:
+            logging.debug("seeded Linux RNG, method '%s', step %d", method, x)

@@ -37,6 +37,7 @@ Help:
 -----
 
 usage: initrng.py [-h] [-l {crit,warn,debug,info,err}] [-e ENTROPY_FILES]
+                  [-r REPEAT]
 
 Linux RNG early init
 
@@ -46,6 +47,8 @@ optional arguments:
                         set program loging severity (level)
   -e ENTROPY_FILES, --entropy-file ENTROPY_FILES
                         files to use as source of entropy (multiple)
+  -r REPEAT, --repeat REPEAT
+                        repeat entropy updates # times (default 8)
 
 Examples:
 ---------
