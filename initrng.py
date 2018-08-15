@@ -174,6 +174,7 @@ if __name__ == '__main__':
         for f in entropy_files:
             i += sha512(digest_sha512, f)
         if not i:
+            logging.debug("digest error for all entropy files, step %d", x)
             continue
 
         method, err = add_entropy(digest_sha512)
