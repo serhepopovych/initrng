@@ -1,5 +1,11 @@
 #!/usr/bin/env python
 
+"""
+Copyright (c) 2018 Serhey Popovych <serhe.popovych@gmail.com>
+Distributed under MIT License.
+See LICENSE file for full license text.
+"""
+
 import fcntl
 import sys
 import os
