@@ -7,11 +7,14 @@ See LICENSE file for full license text.
 """
 
 import fcntl
+import struct
 import sys
 import os
 import hashlib
 import logging
 import argparse
+
+RNDADDENTROPY = 0x40085203 # from linux/random.h
 
 def sha512sum(digest, fileName, blockSize = 16 * 1024):
     """
@@ -64,6 +67,42 @@ def sha512(digest, fileName):
     logging.debug("SHA512 (%s) = %s", fileName, 'ok' if rc else 'fail')
     return int(rc)
 
+def add_entropy(digest, fileName = "/dev/urandom"):
+    """
+    Adds digest.digest_size * 8 bits of entropy using ioctl(RNDADDENTROPY, ...)
+    increasing entropy count if CAP_SYS_ADMIN is available and just writes to
+    fileName (default "/dev/urandom") updating entropy pool without incrementing
+    entropy count.
+    """
+
+    try:
+        fp = open(fileName, 'wb')
+    except IOError as e:
+        return str(e)
+
+    size = digest.digest_size
+    digest = digest.digest()
+
+    # struct rand_pool_info {
+    #         int    entropy_count;
+    #         int    buf_size;
+    #         __u32  buf[0];
+    # };
+    fmt = "ii{:d}s".format(size)
+    rand_pool_info = struct.pack(fmt, size * 8, size, digest)
+
+    err = None
+
+    try:
+        fcntl.ioctl(fp, RNDADDENTROPY, rand_pool_info)
+    except IOError:
+        try:
+            fp.write(digest)
+        except IOError as e:
+            err = str(e)
+
+    return err
+
 def init():
     prog_name = os.path.splitext(os.path.basename(__file__))[0]
     if not prog_name:
@@ -114,10 +153,8 @@ if __name__ == '__main__':
     if not i:
         sys.exit(1)
 
-    try:
-        with open("/dev/urandom", 'wb') as fp:
-            fp.write(digest_sha512.digest())
-    except IOError as e:
-        logging.error("error seeding Linux RNG: %s", str(e))
+    err = add_entropy(digest_sha512)
+    if err:
+        logging.error("error seeding Linux RNG: %s", err)
     else:
         logging.info("successfuly seeded Linux RNG")
