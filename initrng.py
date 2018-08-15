@@ -78,7 +78,7 @@ def add_entropy(digest, fileName = "/dev/urandom"):
     try:
         fp = open(fileName, 'wb')
     except IOError as e:
-        return str(e)
+        return None, str(e)
 
     size = digest.digest_size
     digest = digest.digest()
@@ -91,6 +91,7 @@ def add_entropy(digest, fileName = "/dev/urandom"):
     fmt = "ii{:d}s".format(size)
     rand_pool_info = struct.pack(fmt, size * 8, size, digest)
 
+    method = None
     err = None
 
     try:
@@ -100,8 +101,12 @@ def add_entropy(digest, fileName = "/dev/urandom"):
             fp.write(digest)
         except IOError as e:
             err = str(e)
+        else:
+            method = "write"
+    else:
+        method = "ioctl"
 
-    return err
+    return method, err
 
 def init():
     prog_name = os.path.splitext(os.path.basename(__file__))[0]
@@ -153,8 +158,8 @@ if __name__ == '__main__':
     if not i:
         sys.exit(1)
 
-    err = add_entropy(digest_sha512)
+    method, err = add_entropy(digest_sha512)
     if err:
         logging.error("error seeding Linux RNG: %s", err)
     else:
-        logging.info("successfuly seeded Linux RNG")
+        logging.info("successfuly seeded Linux RNG using '%s' method", method)
