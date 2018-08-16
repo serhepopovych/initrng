@@ -147,17 +147,19 @@ def init():
     ]
     parser.add_argument('-e', '--entropy-file', default = [],
                         action = 'append', dest = 'entropy_files', type = str,
-                        help = 'files to use as source of entropy (multiple)')
+                        help = 'files to use as source of entropy ({:s})'.format(', '.join(dflt_entropy_files)))
 
     # repeat
-    parser.add_argument('-r', '--repeat', default = 8,
+    dflt_repeat = 8
+    parser.add_argument('-r', '--repeat', default = dflt_repeat,
                         action = 'store', type = int,
-                        help = 'repeat entropy updates # times (default 8)')
+                        help = 'repeat entropy updates # times (default {:d})'.format(dflt_repeat))
 
     # output
-    parser.add_argument('-o', '--output', default = '/dev/urandom',
+    dflt_output = "/dev/urandom"
+    parser.add_argument('-o', '--output', default = dflt_output,
                         action = 'store', type = str,
-                        help = 'file to output entropy (default "/dev/urandom")')
+                        help = 'file to output entropy (default "{:s}")'.format(dflt_output))
 
     args = parser.parse_args()
 

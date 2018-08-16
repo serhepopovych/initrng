@@ -46,7 +46,9 @@ optional arguments:
   -l {crit,warn,debug,info,err}, --loglevel {crit,warn,debug,info,err}
                         set program loging severity (level)
   -e ENTROPY_FILES, --entropy-file ENTROPY_FILES
-                        files to use as source of entropy (multiple)
+                        files to use as source of entropy (/dev/kmsg,
+                        /proc/buddyinfo, /proc/interrupts, /proc/softirqs,
+                        /proc/loadavg)
   -r REPEAT, --repeat REPEAT
                         repeat entropy updates # times (default 8)
   -o OUTPUT, --output OUTPUT
