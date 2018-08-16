@@ -139,7 +139,7 @@ def init():
 
     # entropy_files
     dflt_entropy_files = [
-        "/dev/kmsg",
+        "/proc/timer_list",
         "/proc/buddyinfo",
         "/proc/interrupts",
         "/proc/softirqs",
