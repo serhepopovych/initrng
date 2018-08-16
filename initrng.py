@@ -70,35 +70,42 @@ def sha512(digest, fileName):
 def add_entropy(digest, fileName = "/dev/urandom"):
     """
     Adds digest.digest_size * 8 bits of entropy using ioctl(RNDADDENTROPY, ...)
-    increasing entropy count if CAP_SYS_ADMIN is available and just writes to
-    fileName (default "/dev/urandom") updating entropy pool without incrementing
-    entropy count.
+    to increase entropy count if fileName is a character special file node and
+    CAP_SYS_ADMIN is available (otherwise IOError is raised by fnctl.fnctl()).
+
+    Writes entropy to fileName if IOError exception is raised by fnctl.fnctl()
+    or fileName is a regular file. Update entropy pool without incrementing
+    entropy count if fileName is special character device like "/dev/urandom".
     """
 
     try:
-        fp = open(fileName, 'wb')
+        fp = open(fileName, 'ab')
     except IOError as e:
         return None, str(e)
 
     size = digest.digest_size
     digest = digest.digest()
 
-    # from random(4):
-    #
-    #   struct rand_pool_info {
-    #           int    entropy_count;
-    #           int    buf_size;
-    #           __u32  buf[0];
-    #   };
-    #
-    fmt = "ii{:d}s".format(size)
-    rand_pool_info = struct.pack(fmt, size * 8, size, digest)
-
     method = None
     err = None
 
+    do_ioctl = not os.path.isfile(fileName)
+
     try:
-        fcntl.ioctl(fp, RNDADDENTROPY, rand_pool_info)
+        if do_ioctl:
+            # from random(4):
+            #
+            #   struct rand_pool_info {
+            #           int    entropy_count;
+            #           int    buf_size;
+            #           __u32  buf[0];
+            #   };
+            #
+            fmt = "ii{:d}s".format(size)
+            rand_pool_info = struct.pack(fmt, size * 8, size, digest)
+            fcntl.ioctl(fp, RNDADDENTROPY, rand_pool_info)
+        else:
+            raise IOError()
     except IOError:
         try:
             fp.write(digest)
@@ -147,6 +154,11 @@ def init():
                         action = 'store', type = int,
                         help = 'repeat entropy updates # times (default 8)')
 
+    # output
+    parser.add_argument('-o', '--output', default = '/dev/urandom',
+                        action = 'store', type = str,
+                        help = 'file to output entropy (default "/dev/urandom")')
+
     args = parser.parse_args()
 
     logging.basicConfig(format = "{:s}: %(message)s".format(prog_name),
@@ -189,7 +201,7 @@ if __name__ == '__main__':
             logging.debug("digest error for all entropy files, step %d", x)
             continue
 
-        method, err = add_entropy(digest_sha512)
+        method, err = add_entropy(digest_sha512, args.output)
         if err:
             logging.debug("error seeding Linux RNG, step %d: %s", x, err)
         else:

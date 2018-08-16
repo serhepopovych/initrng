@@ -37,7 +37,7 @@ Help:
 -----
 
 usage: initrng.py [-h] [-l {crit,warn,debug,info,err}] [-e ENTROPY_FILES]
-                  [-r REPEAT]
+                  [-r REPEAT] [-o OUTPUT]
 
 Linux RNG early init
 
@@ -49,6 +49,8 @@ optional arguments:
                         files to use as source of entropy (multiple)
   -r REPEAT, --repeat REPEAT
                         repeat entropy updates # times (default 8)
+  -o OUTPUT, --output OUTPUT
+                        file to output entropy (default "/dev/urandom")
 
 Examples:
 ---------
