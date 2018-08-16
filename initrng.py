@@ -183,10 +183,25 @@ def init():
         logging.debug("adjust repeat count from %d to %d", args.repeat, repeat)
         args.repeat = repeat
 
+    # truncate entropy file
+    output = args.output
+    try:
+        with open(output, 'wb'):
+            pass
+    except IOError:
+        logging.debug("entropy file '%s' isn't writable", output)
+        args = None
+    else:
+        logging.debug("entropy file '%s' is writable", output)
+
     return args
 
 if __name__ == '__main__':
     args = init()
+
+    if args is None:
+        logging.debug("fail to adjust/validate args")
+        sys.exit(1)
 
     logging.info("Linux Random Number Generator (RNG) early init")
 
