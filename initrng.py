@@ -176,8 +176,8 @@ def init():
 
     if repeat <= 0:
         repeat = 1
-    elif repeat > 128:
-        repeat = 128
+    elif repeat > 65536:
+        repeat = 65536
 
     if repeat != args.repeat:
         logging.debug("adjust repeat count from %d to %d", args.repeat, repeat)
