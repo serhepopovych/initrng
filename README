@@ -24,7 +24,7 @@ might be embedded device.
 The only semi reliable option left is to prepare seed by ourselves based
 on some kernel pseudo random data like kernel ring buffer contents from
 /dev/kmsg with printk() timings when CONFIG_PRINTK_TIME is 'y', contents
-of various procfs files (e.g. interrupts, buddyinfo, loadavg).
+of various procfs files (e.g. interrupts, buddyinfo, schedstat).
 
 All these sources should not be considered as good random seed, but much
 better than just using number of seconds since Epoch.
@@ -48,7 +48,7 @@ optional arguments:
   -e ENTROPY_FILES, --entropy-file ENTROPY_FILES
                         files to use as source of entropy (/dev/kmsg,
                         /proc/buddyinfo, /proc/interrupts, /proc/softirqs,
-                        /proc/loadavg)
+                        /proc/schedstat)
   -r REPEAT, --repeat REPEAT
                         repeat entropy updates # times (default 8)
   -o OUTPUT, --output OUTPUT
@@ -63,9 +63,9 @@ Examples:
     #  /proc/interrupts
     #  /proc/buddyinfo
     #  /proc/softirqs
-    #  /proc/loadavg
+    #  /proc/schedstat
     #
     $ sudo initrng.py
 
     # use 'debug' severity for logging and custom entropy file
-    $ initrng.py -l debug -e /proc/loadavg
+    $ initrng.py -l debug -e /proc/schedstat

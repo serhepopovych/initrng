@@ -143,8 +143,14 @@ def init():
         "/proc/buddyinfo",
         "/proc/interrupts",
         "/proc/softirqs",
-        "/proc/loadavg",
     ]
+
+    sched_debug = "/proc/sched_debug"
+    if os.path.isfile(sched_debug):
+        dflt_entropy_files.append(sched_debug)
+    else:
+        dflt_entropy_files.append("/proc/schedstat")
+
     parser.add_argument('-e', '--entropy-file', default = [],
                         action = 'append', dest = 'entropy_files', type = str,
                         help = 'files to use as source of entropy ({:s})'.format(', '.join(dflt_entropy_files)))
